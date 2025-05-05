@@ -296,17 +296,14 @@ def main( numEvents , numFiles , outDir , energyMin , energyMax , thetaMin , the
 
     #offset detector volume by 0.001mm clearance so that particle are not generate at the interface of two materials (can cause issues with Geant4)
     clearance=0.001
-    x = 7464
-    #Xmin = xmin-clearance
-    Xmin = xmin-x-clearance
-    #Xmax = xmax+clearance
-    Xmax = xmax+x+clearance
+    Xmin = xmin-clearance
+    Xmax = xmax+clearance
     Ymin = ymin-clearance
     Ymax = ymax+clearance
-    #Zmin = zmin-clearance
-    Zmin = -840-x-clearance
-    #Zmax = zmax+clearance
-    Zmax = 5544+x+clearance
+    Zmin = zmin-clearance
+    Zmax = zmax+clearance
+
+    # umbrella = 7464 # for muon flux
 
     the_cosmic_muon_spectrum = cosmic_muon_spectrum( energyMin, energyMax, thetaMin, thetaMax )
 
@@ -332,11 +329,13 @@ def main( numEvents , numFiles , outDir , energyMin , energyMax , thetaMin , the
             pz = -p*math.sin(theta_rad)*math.cos(phi)
         
             # pick a random point inside the full hcal volume in detector coordinates, (0,0,0) is the center of the target
-            z = random.uniform(zmin-2*x,zmax+2*x)
+            # z = random.uniform(zmin-2*umbrella,zmax+2*umbrella) # for muon flux
+            z = random.uniform(zmin,zmax)
             if detector != 'fullDetector':              #anything besides the full detector
-                x = random.uniform(xmin-2*x,xmax+2*x)
-                #y = random.uniform(ymin,ymax)
-                y = ymin
+                # x = random.uniform(xmin-2*umbrella,xmax+2*umbrella) # for muon flux
+                x = random.uniform(xmin,xmax)
+                y = random.uniform(ymin,ymax)
+                # y = ymin # for muon flux
             else:
                 if z < 220:                             #this z region encompasses the tagger/target region
                     x = random.uniform(-212.5,212.5)
@@ -349,80 +348,214 @@ def main( numEvents , numFiles , outDir , energyMin , energyMax , thetaMin , the
             # find the intersection with the detector volume
             # xt, yt, and zt are where the incoming muon would intersect infinite planes containing the planes of the hcal volume
             # check for muons intersecting the top plane first
-            if xmin < x < xmax and zmin < z < zmax:
-                xt = x + px/py*(Ymax-y)
-                zt = z + pz/py*(Ymax-y)
-                if Xmin < xt < Xmax and Zmin < zt < Zmax and xmin < x < xmax and zmin < z < zmax:
-                    xv = xt
-                    yv = Ymax
-                    zv = zt
-                else:
-                    count += 1
-                    continue
 
+            xt = x + px/py*(Ymax-y)
+            zt = z + pz/py*(Ymax-y)
+            if Xmin < xt < Xmax and Zmin < zt < Zmax:
+              xv = xt
+              yv = Ymax
+              zv = zt
+
+            #now check for muons intersecting the positive x, negative x, positive z, and negative z planes
             else:
-                if x > xmax and z > zmax: # case 1
-                    if px > 0 and pz > 0:
-                        xt = x + px/pz*(Zmin-z)
-                        ytx = y + py/pz*(Zmin-z)
-                        zt = z + pz/px*(Xmax-x)
-                        ytz = y + py/px*(Xmax-x)
-                        if (xmin < xt < xmax and ymin < ytx < ymax):
-                            xv = xt
-                            yv = ytx
-                            zv = Zmax
-                        elif (zmin < zt < zmax and ymin < ytz < ymax):
-                            xv = xt
-                            yv = ytx
-                            zv = Zmax
+              if px < 0:
+                yt = y + py/px*(Xmax-x)
+                zt = z + pz/px*(Xmax-x)
+                if Ymin < yt < Ymax and Zmin < zt < Zmax:
+                  xv = Xmax
+                  yv = yt
+                  zv = zt
 
-                elif xmin < x < xmax and z > zmax: # case 2
-                    if pz > 0:
-                        xt = x + px/pz*(Zmax-z)
-                        yt = y + py/pz*(Zmax-z)
-                        if xmin < xt < xmax and ymin < yt < ymax:
-                            xv = xt
-                            yv = yt
-                            zv = Zmax
-                elif x < 
-                    
- 
-            # now check for muons intersecting the positive x, negative x, positive z, and negative z planes
-            # else:
-            #   if px < 0:
-            #     yt = y + py/px*(Xmax-x)
-            #     zt = z + pz/px*(Xmax-x)
-            #     if Ymin < yt < Ymax and Zmin < zt < Zmax:
-            #       xv = Xmax
-            #       yv = yt
-            #       zv = zt
+              elif px > 0:
+                yt = y + py/px*(Xmin-x)
+                zt = z + pz/px*(Xmin-x)
+                if Ymin < yt < Ymax and Zmin < zt < Zmax:
+                  xv = Xmin
+                  yv = yt
+                  zv = zt
 
-            #   elif px > 0:
-            #     yt = y + py/px*(Xmin-x)
-            #     zt = z + pz/px*(Xmin-x)
-            #     if Ymin < yt < Ymax and Zmin < zt < Zmax:
-            #       xv = Xmin
-            #       yv = yt
-            #       zv = zt
+              elif pz < 0:
+                xt = x + px/pz*(Zmax-z)
+                yt = y + py/pz*(Zmax-z)
+                if Xmin < xt < Xmax and Ymin < yt < Ymax:
+                  xv = xt
+                  yv = yt
+                  zv = Zmax
 
-            #   elif pz < 0:
-            #     xt = x + px/pz*(Zmax-z)
-            #     yt = y + py/pz*(Zmax-z)
-            #     if Xmin < xt < Xmax and Ymin < yt < Ymax:
-            #       xv = xt
-            #       yv = yt
-            #       zv = Zmax
+              elif pz > 0:
+                xt = x + px/pz*(Zmin-z)
+                yt = y + py/pz*(Zmin-z)
+                if Xmin < xt < Xmax and Ymin < yt < Ymax:
+                  xv = xt
+                  yv = yt
+                  zv = Zmin
+                else:
+                  continue
 
-            #   elif pz > 0:
-            #     xt = x + px/pz*(Zmin-z)
-            #     yt = y + py/pz*(Zmin-z)
-            #     if Xmin < xt < Xmax and Ymin < yt < Ymax:
-            #       xv = xt
-            #       yv = yt
-            #       zv = Zmin
+            ## The method below this line is used to calculate the muon flux on the detector and should not be used for
+            # simulating particles, as the vertices are not correct.
+            # x, z, y coordinates above need to be changed as well. Uncomment umbrella
+            # I've only tried this method for --detector=backHcal
+
+            # if Xmin < x < Xmax and Zmin < z < Zmax:
+            #     xt = x + px/py*(Ymax-y)
+            #     zt = z + pz/py*(Ymax-y)
+            #     if Xmin-umbrella < xt < Xmax+umbrella and Zmin-umbrella < zt < Zmax+umbrella:
+            #         xv = xt
+            #         yv = Ymax
+            #         zv = zt
             #     else:
-            #       continue
-            
+            #         count += 1
+            #         continue
+            # else:
+            #     if x > Xmax and z > Zmax: # case 1
+            #         if px > 0 and pz > 0:
+            #             xt = x + px/pz*(Zmax-z)
+            #             ytx = y + py/pz*(Zmax-z)
+            #             zt = z + pz/px*(Xmax-x)
+            #             ytz = y + py/px*(Xmax-x)
+            #             if (Xmin < xt < Xmax and Ymin < ytx < Ymax):
+            #                 xv = xt
+            #                 yv = ytx
+            #                 zv = Zmax
+            #             elif (Zmin < zt < Zmax and Ymin < ytz < Ymax):
+            #                 xv = xt
+            #                 yv = ytx
+            #                 zv = Zmax
+            #             else:
+            #                 count += 1
+            #                 continue
+            #         else:
+            #             count += 1
+            #             continue
+
+            #     elif Xmin < x < Xmax and z > Xmax: # case 2
+            #         if pz > 0:
+            #             xt = x + px/pz*(Zmax-z)
+            #             yt = y + py/pz*(Zmax-z)
+            #             if Xmin < xt < Xmax and Ymin < yt < Ymax:
+            #                 xv = xt
+            #                 yv = yt
+            #                 zv = Zmax
+            #             else:
+            #                 count += 1
+            #                 continue
+            #         else:
+            #             count += 1
+            #             continue
+
+            #     elif x < Xmin and z > Zmax: # case 3
+            #         if px < 0 and pz > 0:
+            #             xt = x + px/pz*(Zmax-z)
+            #             ytx = y + py/pz*(Zmax-z)
+            #             zt = z + pz/px*(Xmin-x)
+            #             ytz = y + py/px*(Xmin-x)
+            #             if (Xmin < xt < Xmax and Ymin < ytx < Ymax):
+            #                 xv = xt
+            #                 yv = ytx
+            #                 zv = Zmax
+            #             elif (Zmin < zt < Zmax and Ymin < ytz < Ymax):
+            #                 xv = xt
+            #                 yv = ytx
+            #                 zv = Zmax
+            #             else:
+            #                 count += 1
+            #                 continue
+            #         else:
+            #             count += 1
+            #             continue
+                    
+                
+            #     elif x > Xmax and Zmin < z < Zmax: # case 4
+            #         if px > 0:
+            #             zt = z + pz/px*(Xmax-x)
+            #             yt = y + py/px*(Xmax-x)
+            #             if (Zmin < z < Zmax and Ymin < y < Ymax):
+            #                 xv = Xmax
+            #                 yv = yt
+            #                 zv = zt
+            #             else:
+            #                 count += 1
+            #                 continue
+            #         else:
+            #             count += 1
+            #             continue
+
+            #     elif x < Xmax and Zmin < z < Zmax: # case 5
+            #         if px < 0:
+            #             zt = z + pz/px*(Xmin-x)
+            #             yt = y + py/px*(Xmin-x)
+            #             if (Zmin < z < Zmax and Ymin < y < Ymax):
+            #                 xv = Xmax
+            #                 yv = yt
+            #                 zv = zt
+            #             else:
+            #                 count += 1
+            #                 continue
+            #         else:
+            #             count += 1
+            #             continue
+
+            #     elif x > Xmax and z < Zmin: # case 6
+            #         if px > 0 and pz < 0:
+            #             xt = x + px/pz*(Zmin-z)
+            #             ytx = y + py/pz*(Zmin-z)
+            #             zt = z + pz/px*(Xmax-x)
+            #             ytz = y + py/px*(Xmax-x)
+            #             if (Xmin < xt < Xmax and Ymin < ytx < Ymax):
+            #                 xv = xt
+            #                 yv = ytx
+            #                 zv = Zmax
+            #             elif (Zmin < zt < Zmax and Ymin < ytz < Ymax):
+            #                 xv = xt
+            #                 yv = ytx
+            #                 zv = Zmax
+            #             else:
+            #                 count += 1
+            #                 continue
+            #         else:
+            #             count += 1
+            #             continue
+
+            #     elif Xmin < x < Xmax and z < Zmin: # case 7
+            #         if pz < 0:
+            #             xt = x + px/pz*(Zmin-z)
+            #             yt = y + py/pz*(Zmin-z)
+            #             if (Zmin < z < Zmax and Ymin < y < Ymax):
+            #                 xv = xt
+            #                 yv = yt
+            #                 zv = Zmax
+            #             else:
+            #                 count += 1
+            #                 continue
+            #         else:
+            #             count += 1
+            #             continue
+
+            #     elif x < Xmin and z < Zmin: # case 8
+            #         if px < 0 and pz < 0:
+            #             xt = x + px/pz*(Zmin-z)
+            #             ytx = y + py/pz*(Zmin-z)
+            #             zt = z + pz/px*(Xmin-x)
+            #             ytz = y + py/px*(Xmin-x)
+            #             if (Xmin < xt < Xmax and Ymin < ytx < Ymax):
+            #                 xv = xt
+            #                 yv = ytx
+            #                 zv = Zmax
+            #             elif (Zmin < zt < Zmax and Ymin < ytz < Ymax):
+            #                 xv = xt
+            #                 yv = ytx
+            #                 zv = Zmax
+            #             else:
+            #                 count += 1
+            #                 continue
+            #         else:
+            #             count += 1
+            #             continue
+            #     else:
+            #         print("error skip!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            #         count += 1
+            #         continue
 
             # find muon TOF from [xv,xt,xz] to [x,y,z]
             dist=math.sqrt(math.pow(x - xv,2) + math.pow(y - yv,2) + math.pow(z - zv,2)) #distance from point of muon generation to random location in the detector volume (mm) 
@@ -436,10 +569,10 @@ def main( numEvents , numFiles , outDir , energyMin , energyMax , thetaMin , the
 
             new_lhe.write_event( [xv,yv,zv] , [energy,px,py,pz] , pdgID , muon_mass, muon_delay)
 
-            count+=1
+            # count+=1
             i+=1
         #end loop over events
-        print(numEvents/count)
+        # print(numEvents/count)
     #end loop over files
 #end main def
 
