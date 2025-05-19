@@ -307,6 +307,8 @@ def main( numEvents , numFiles , outDir , energyMin , energyMax , thetaMin , the
 
     the_cosmic_muon_spectrum = cosmic_muon_spectrum( energyMin, energyMax, thetaMin, thetaMax )
 
+    average = 0
+
     for n in range(numFiles):
         filename = outDir+"/"+"cmmc_energy_"+str(int(energyMin))+"_"+str(int(energyMax))+"_GeV_theta_"+str(int(thetaMin))+"_"+str(int(thetaMax))+"_deg_" +str(numEvents)+"_events_%04d.lhe"%(n)
         new_lhe = lhe_file(filename)
@@ -327,6 +329,8 @@ def main( numEvents , numFiles , outDir , energyMin , energyMax , thetaMin , the
             px = -p*math.sin(theta_rad)*math.sin(phi)
             py = -p*math.cos(theta_rad)
             pz = -p*math.sin(theta_rad)*math.cos(phi)
+
+            average += phi
         
             # pick a random point inside the full hcal volume in detector coordinates, (0,0,0) is the center of the target
             # z = random.uniform(zmin-2*umbrella,zmax+2*umbrella) # for muon flux
@@ -582,6 +586,10 @@ if __name__ == '__main__' :
     import os
     import argparse
 
+    import time
+
+    start = time.time()
+
     # get number of events
     parser = argparse.ArgumentParser(
         description="Makes lhe files for atmospheric muons intersecting the HCal of the LDMX detector.",
@@ -613,3 +621,6 @@ if __name__ == '__main__' :
             , arg.thetaMin , arg.thetaMax 
             , arg.hcalDepth, arg.timeWindow
             , arg.timeShift, arg.detector )
+    
+    end = time.time()
+    print(f"Elapsed time: {end - start:.2f} seconds")

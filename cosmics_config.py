@@ -16,6 +16,10 @@ from datetime import datetime
 current_date = datetime.now().strftime("%Y%m%d")  # Added current date to the filename
 output_string = "cosmicEvents/cosmic_events_" + current_date + ".root"
 
+import time
+
+start = time.time()
+
 p.outputFiles = [output_string]
 p.run = 1
 p.logFrequency = 1
@@ -35,7 +39,7 @@ from LDMX.Hcal.hcal import HcalOldDigiProducer
 
 sim.generators = [ generators.lhe( 'cosmic_muons' , full_lhe_file_path ) ]
 
-p.maxEvents = 100000
+p.maxEvents = 10000
 
 p.sequence = [ sim , hcal_digi.HcalDigiProducer(), hcal_digi.HcalRecProducer()]
 # p.sequence = [ sim , hcal_digi.HcalDigiProducer(), hcal_digi.HcalSimpleDigiAndRecProducer()]
