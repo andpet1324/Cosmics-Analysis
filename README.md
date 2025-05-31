@@ -1,4 +1,4 @@
-## What the script does
+# What the script does
 
 This script analyzes cosmic muons in the back-HCal. An algorithm for the side-HCal (and ECal) is not implemented.
 
@@ -15,11 +15,11 @@ With estimatedcheck enabled, the script calculates the estimated energy in each 
 
 We can analyse horisontal and vertical bars individually by changing chose_orientation_.
 
-## How to run
+# How to run
 
 Fork this repository and cd into it.
 
-# Install denv and change image
+## Install denv and change image
 install denv as according to https://ldmx-software.github.io/
 
 I used ldmx/dev:4.2.2. 
@@ -29,7 +29,7 @@ To change image:
 denv config image ldmx/dev:4.2.2
 denv config image pull
 
-# Generate an LHE-file
+## Generate an LHE-file
 
 The LHE-file contains initial information about the muon.
 
@@ -39,7 +39,7 @@ denv python3 lheData/cosmic_muon_lhe_generator_v14.py --numEvents=xx --detector=
 more options exist for the generator. See cosmic_muon_lhe_generator_v14.py.
 An LHE-file is now created in lheData/
 
-# Simulate in Geant4
+## Simulate in Geant4
 
 cosmics_config.py contains an option for max allowed events. Change this to the number of events you want to run.
 
@@ -48,7 +48,7 @@ denv fire cosmics_config.py lheData/name_of_file.lhe
 
 This creates a ROOT-file in cosmicEvents/
 
-# Analyse
+## Analyse
 
 config file uses CosmicsAnalysis.cxx & CosmicsAnalysis.h for analysis.
 
