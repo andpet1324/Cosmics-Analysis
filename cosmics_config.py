@@ -39,7 +39,7 @@ from LDMX.Hcal.hcal import HcalOldDigiProducer
 
 sim.generators = [ generators.lhe( 'cosmic_muons' , full_lhe_file_path ) ]
 
-p.maxEvents = 10000
+p.maxEvents = 1000
 
 p.sequence = [ sim , hcal_digi.HcalDigiProducer(), hcal_digi.HcalRecProducer()]
 # p.sequence = [ sim , hcal_digi.HcalDigiProducer(), hcal_digi.HcalSimpleDigiAndRecProducer()]

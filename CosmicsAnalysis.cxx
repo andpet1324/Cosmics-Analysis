@@ -793,7 +793,7 @@ void CosmicsAnalysis::onProcessStart() { // Runs once at start
 void CosmicsAnalysis::analyze(const framework::Event& event) {
 
     // Get the data collections from the event bus
-    const auto& hcal_sim_hits{event.getCollection<ldmx::SimCalorimeterHit>("HcalSimHits")};
+    const auto& hcal_sim_hits{event.getCollection<ldmx::SimCalorimeterHit>("HcalSimHits","")};
     const auto& sim_particles{event.getMap<int, ldmx::SimParticle>("SimParticles", "cosmics")};
     // const auto& hcal_rec_hits{event.getCollection<ldmx::HcalHit>("HcalRecHits")}; // This is reconstructed information that was not used for the project, but it was analyzed in the beginning.
 

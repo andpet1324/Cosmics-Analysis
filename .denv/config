@@ -1,5 +1,5 @@
 denv_name="LDMX-Project"
-denv_image="ldmx/dev:4.2.2"
+denv_image="ldmx/pro:v4.3.1"
 denv_shell="/bin/bash -i"
 denv_mounts=""
 denv_env_var_copy_all="true"
