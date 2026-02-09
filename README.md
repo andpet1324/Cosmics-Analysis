@@ -22,11 +22,11 @@ Fork this repository and cd into it.
 ## Install denv and change image
 install denv as according to https://ldmx-software.github.io/
 
-I used ldmx/dev:4.2.2. 
+Use ldmx/dev:4.2.10 
 
 To change image:
 
-denv config image ldmx/dev:4.2.2
+denv config image ldmx/pro:v4.2.10
 
 denv config image pull
 
