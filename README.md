@@ -32,9 +32,7 @@ denv config image pull
 
 ## Generate an LHE-file
 
-The LHE-file contains initial information about the muon. First create a folder for root files
-
-mkdir cosmicEvents
+The LHE-file contains initial information about the muon.
 
 run:
 denv python3 lheData/cosmic_muon_lhe_generator_v14.py --numEvents=xx --detector=backHcal
@@ -45,6 +43,10 @@ An LHE-file is now created in lheData/
 ## Simulate in Geant4
 
 cosmics_config.py contains an option for max allowed events. Change this to the number of events you want to run.
+
+First create a folder for root files
+
+mkdir cosmicEvents
 
 run:
 denv fire cosmics_config.py lheData/name_of_file.lhe
