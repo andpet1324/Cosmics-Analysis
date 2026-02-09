@@ -32,7 +32,9 @@ denv config image pull
 
 ## Generate an LHE-file
 
-The LHE-file contains initial information about the muon.
+The LHE-file contains initial information about the muon. First create a folder for root files
+
+mkdir cosmicEvents
 
 run:
 denv python3 lheData/cosmic_muon_lhe_generator_v14.py --numEvents=xx --detector=backHcal
