@@ -27,6 +27,7 @@ I used ldmx/dev:4.2.2.
 To change image:
 
 denv config image ldmx/dev:4.2.2
+
 denv config image pull
 
 ## Generate an LHE-file
