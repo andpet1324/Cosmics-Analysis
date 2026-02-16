@@ -6,8 +6,13 @@ author: Reese Petersen, Tom Eichlersmith, Martin Meier
 affiliations: University of Minnesota, LDMX Collaboration
 email: pet00831@umn.edu, eichl008@umn.edu
 
+updated to v14 detector geometry by
+Andreas Pettersson
+affilitation: Lund University, LDMX Collaboration
+email: appettersson@hotmail.com
+
 date: 16 July 2018
-updated: January 2021
+updated: May 2025
 
 This script writes lhe files which descibe cosmic muons 
 with energy and momentum distributed according to a function provided by
